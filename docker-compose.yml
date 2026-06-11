@@ -1,0 +1,69 @@
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Kafka (KRaft — no ZooKeeper)
+  # ---------------------------------------------------------------------------
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"   # internal / host access
+      - "9093:9093"   # external listener (tunnelled by ngrok)
+    environment:
+      # KRaft cluster identity
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9094"
+
+      # Listeners
+      # PLAINTEXT  — used by apps on the same Docker network / host
+      # EXTERNAL   — advertises the ngrok public address so Solace (outside
+      #              Docker) can reach this broker through the tunnel
+      # CONTROLLER — internal KRaft controller traffic only
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,EXTERNAL://:9093,CONTROLLER://:9094"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,EXTERNAL://${KAFKA_EXTERNAL_HOST:-localhost}:${KAFKA_EXTERNAL_PORT:-9093}"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+
+      # General settings
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_DEFAULT_REPLICATION_FACTOR: "1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+
+      # Required for KRaft — unique cluster ID (generate once with: kafka-storage random-uuid)
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Kafka UI
+  # ---------------------------------------------------------------------------
+  kafka-ui-solace:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui-solace
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+
+volumes:
+  kafka_data:
+    driver: local

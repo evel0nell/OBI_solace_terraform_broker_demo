@@ -1,5 +1,5 @@
 
-broker_semp_url             = "CHANGEME" # https://BROKER_HOSTNAME:943
+broker_semp_url             = "HOSTNAME:943" # https://BROKER_HOSTNAME:943
 broker_username             = "mission-control-manager"
 broker_password             = "CHANGEME" # Cloud control plane -> cluster manager -> broker -> connect -> SEMP - REST API -> mission control manager password
 
@@ -17,5 +17,7 @@ client_password              = "CHANGEME" # client basic auth für das Testen
 client_profile_name          = "b3-client"
 
 acl_profile_name             = "b3-acl"
-b3_topic                     = "CHANGEME" # OBI topic Pfad
+b3_topic                     = "obi/masterdata/b3-itemhierarchy-category/create/v1/DE/de_CH/682" # OBI topic Pfad
 
+kafka_enabled           = true
+kafka_bootstrap_servers = "CHANGEME"

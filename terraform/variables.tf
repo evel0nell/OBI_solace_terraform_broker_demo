@@ -122,3 +122,43 @@ variable "client_profile_name" {
   default     = "tf-guaranteed"
 }
 
+###############################################################################
+# Kafka Bridge (local cluster exposed via ngrok)
+###############################################################################
+
+variable "kafka_enabled" {
+  description = "Set to true to create the Kafka Receiver. Set to false when the local Kafka cluster is not running."
+  type        = bool
+  default     = false
+}
+
+variable "kafka_bootstrap_servers" {
+  description = "Comma-separated list of Kafka bootstrap broker addresses. Use the bore tunnel address printed by scripts/start.sh, e.g. \"bore.pub:46553\"."
+  type        = string
+  default     = ""
+}
+
+variable "kafka_receiver_name" {
+  description = "Name for the Kafka Receiver object on the broker."
+  type        = string
+  default     = "local-kafka-receiver"
+}
+
+variable "kafka_receiver_group_id" {
+  description = "Kafka consumer group ID used by the Solace Kafka Receiver."
+  type        = string
+  default     = "solace-receiver-group"
+}
+
+variable "kafka_receiver_topics" {
+  description = "List of Kafka topic names the Receiver will subscribe to and forward into the Solace VPN."
+  type        = list(string)
+  default     = []
+}
+
+variable "kafka_sender_name" {
+  description = "Name for the Kafka Sender object on the broker."
+  type        = string
+  default     = "local-kafka-sender"
+}
+
