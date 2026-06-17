@@ -155,7 +155,7 @@ Other expressions you can build with the functions above (not provisioned here):
 
 ```hcl
 # Dotted Kafka hierarchy → Solace level hierarchy:  "a.b.c" -> "a/b/c"
-local_topic = "${replace(kafkaTopic(), \".\", \"/\")}"
+local_topic = "${replace(kafkaTopic(), ".", "/")}"
 
 # Promote a Kafka header into the topic, with a fallback:  -> "events/DE" (or "events/unknown")
 local_topic = "events/${withDefault(kafkaHeaderAsString(\"region\"), \"unknown\")}"
