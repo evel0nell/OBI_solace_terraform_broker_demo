@@ -1,7 +1,7 @@
 
 broker_semp_url             = "https://ps-showcase-demo.messaging.solace.cloud:943" # https://BROKER_HOSTNAME:943
 broker_username             = "mission-control-manager"
-broker_password             = "schr4gcs4eld102l92akknh9gu" # Cloud control plane -> cluster manager -> broker -> connect -> SEMP - REST API -> mission control manager password
+broker_password             = "CHANGEME" # Cloud control plane -> cluster manager -> broker -> connect -> SEMP - REST API -> mission control manager password
 
 
 msg_vpn_name                 = "ps-showcase-demo"
