@@ -1,6 +1,5 @@
 
 resource "solacebroker_msg_vpn_kafka_receiver" "local" {
-  count = var.kafka_enabled ? 1 : 0
 
   msg_vpn_name        = solacebroker_msg_vpn.this.msg_vpn_name
   kafka_receiver_name = var.kafka_receiver_name
@@ -18,10 +17,9 @@ resource "solacebroker_msg_vpn_kafka_receiver" "local" {
 
 # Binding: Kafka topic "external.system" → Solace topic "external.system"
 resource "solacebroker_msg_vpn_kafka_receiver_topic_binding" "external_system" {
-  count = var.kafka_enabled ? 1 : 0
 
   msg_vpn_name        = solacebroker_msg_vpn.this.msg_vpn_name
-  kafka_receiver_name = solacebroker_msg_vpn_kafka_receiver.local[0].kafka_receiver_name
+  kafka_receiver_name = solacebroker_msg_vpn_kafka_receiver.local.kafka_receiver_name
   topic_name          = "external.system"
 
   enabled        = true

@@ -162,3 +162,19 @@ variable "kafka_sender_name" {
   default     = "local-kafka-sender"
 }
 
+###############################################################################
+# Example queues for the Kafka Receiver "Local Topic Expression" patterns
+###############################################################################
+
+variable "kafka_example_queues_enabled" {
+  description = "Create one demo queue per Local Topic Expression example (see kafka_example_queues.tf)."
+  type        = bool
+  default     = true
+}
+
+variable "kafka_example_queue_prefix" {
+  description = "Name prefix for the per-example demo queues, e.g. \"tf.demo.kafka\" => tf.demo.kafka.hierarchy."
+  type        = string
+  default     = "tf.demo.kafka"
+}
+

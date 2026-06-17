@@ -1,0 +1,15 @@
+# Terraform state & locks
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# Variable files containing secrets
+*.auto.tfvars
+
+# Generated certificate material — never commit private keys
+generated-certs/
+*.pem
+*.key
+*.crt
