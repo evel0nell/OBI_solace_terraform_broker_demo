@@ -27,6 +27,25 @@ resource "solacebroker_msg_vpn_kafka_receiver_topic_binding" "external_system" {
   local_topic    = "external.system"
 }
 
+# Queue for the external-system bridge output.
+resource "solacebroker_msg_vpn_queue" "external_system" {
+  msg_vpn_name = solacebroker_msg_vpn.this.msg_vpn_name
+  queue_name   = "external.system"
+
+  ingress_enabled = true
+  egress_enabled  = true
+
+  access_type         = "exclusive"
+  permission          = "consume"
+  max_msg_spool_usage = var.queue_max_msg_spool_usage_mb
+}
+
+resource "solacebroker_msg_vpn_queue_subscription" "external_system" {
+  msg_vpn_name       = solacebroker_msg_vpn_queue.external_system.msg_vpn_name
+  queue_name         = solacebroker_msg_vpn_queue.external_system.queue_name
+  subscription_topic = "external/system/>"
+}
+
 # ---------------------------------------------------------------------------
 # Kafka Sender  (Solace → Kafka)
 # ---------------------------------------------------------------------------

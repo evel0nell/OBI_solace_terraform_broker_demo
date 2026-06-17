@@ -137,29 +137,30 @@ Expressions are delimited by `${ ... }`. Functions applicable to a Kafka **Recei
 
 ### Examples
 
+These are the two patterns provisioned by `kafka_example_queues.tf` (Kafka source topics
+`orders` and `payments`, created by `scripts/create-topics.sh`). Sample record: partition
+`3`, offset `10421`, key `customer-42`.
+
 ```hcl
-# 1. Dotted Kafka hierarchy → Solace level hierarchy
-#    "a.b.c"  ->  "a/b/c"   (the canonical Solace example)
-local_topic = "${replace(kafkaTopic(), \".\", \"/\")}"
-
-# 2. Namespace + original topic
-#    -> "kafka/external.system"
-local_topic = "kafka/${kafkaTopic()}"
-
-# 3. Embed partition and offset for traceability / replay
-#    -> "kafka/external.system/p/3/o/10421"
-local_topic = "kafka/${kafkaTopic()}/p/${kafkaPartitionNumber()}/o/${kafkaPartitionOffset()}"
-
-# 4. Route by message key (e.g. tenant or entity id)
-#    -> "orders/by-key/customer-42"
+# orders — route by message key 
+#    -> "orders/by-key/customer-42"          attracted by queue subscription "orders/by-key/>"
 local_topic = "orders/by-key/${kafkaPartitionKeyAsString()}"
 
-# 5. Promote a Kafka header into the topic, with a fallback
-#    -> "events/DE"  (or "events/unknown" if the header is absent)
+# payments — embed partition and offset for traceability / replay
+#    -> "payments/p/3/o/10421"               attracted by queue subscription "payments/p/*/o/*"
+local_topic = "payments/p/${kafkaPartitionNumber()}/o/${kafkaPartitionOffset()}"
+```
+
+Other expressions you can build with the functions above (not provisioned here):
+
+```hcl
+# Dotted Kafka hierarchy → Solace level hierarchy:  "a.b.c" -> "a/b/c"
+local_topic = "${replace(kafkaTopic(), \".\", \"/\")}"
+
+# Promote a Kafka header into the topic, with a fallback:  -> "events/DE" (or "events/unknown")
 local_topic = "events/${withDefault(kafkaHeaderAsString(\"region\"), \"unknown\")}"
 
-# 6. Date‑partitioned archive topic from the message timestamp
-#    -> "archive/2026/06/17/external.system"
+# Date-partitioned archive from the message timestamp:  -> "archive/2026/06/17/orders"
 local_topic = "archive/${utcYear()}/${utcMonth()}/${utcDay()}/${kafkaTopic()}"
 ```
 
